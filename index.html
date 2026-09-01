@@ -134,6 +134,9 @@ document.getElementById('helpClose').onclick=()=>helpDialog.close();
 helpDialog.onclick=e=>{if(e.target===helpDialog)helpDialog.close()};
 const initialPerson=personFromLocation();if(initialPerson)current=initialPerson;updatePageTitle(current);
 renderNavigator();
+function siblingSectionLabel(items){const male=items.filter(n=>n.gender==='M').length,female=items.filter(n=>n.gender==='F').length,unknown=items.length-male-female;if(male&&!female&&!unknown)return 'МАНБАЛАРДА ҚАЙД ЭТИЛГАН АКА-УКАЛАРИ';if(female&&!male&&!unknown)return 'МАНБАЛАРДА ҚАЙД ЭТИЛГАН ОПА-СИНГИЛЛАРИ';return 'МАНБАЛАРДА ҚАЙД ЭТИЛГАН АКА-УКА ВА ОПА-СИНГИЛЛАРИ'}
+function updateSiblingSectionLabel(){const heading=[...document.querySelectorAll('#navigator .section-title')].find(x=>x.textContent.includes('АКА-УКА ВА ОПА-СИНГИЛЛАРИ'));if(!heading)return;const parent=parents.get(current.id),siblings=parent?parent.children.filter(n=>n!==current&&!n.gap):[];heading.innerHTML=`${icon('users')}${siblingSectionLabel(siblings)} · ${siblings.length}`}
+const navigatorObserver=new MutationObserver(updateSiblingSectionLabel);navigatorObserver.observe(document.getElementById('navigator'),{childList:true});updateSiblingSectionLabel();
 function syncPersonFromLocation(){const next=personFromLocation()||DATA.roots[0];if(next.id!==current.id)select(next.id,{updateUrl:false,scroll:false})}
 window.addEventListener('popstate',syncPersonFromLocation);window.addEventListener('hashchange',syncPersonFromLocation);
 </script>
